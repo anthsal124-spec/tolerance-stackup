@@ -26,11 +26,11 @@ Your prompt should start with `(.venv)`.
 
 ## Roadmap
 
-- [ ] **Step 0: Setup**
+- [x] **Step 0: Setup** *(finished 2026-10-02, first commit `1e237db`)*
   - [x] 0a: Terminal basics, check what's installed
   - [x] 0b: Install Python 3.14 and VS Code, turn off Anaconda auto-start
-  - [ ] 0c: Project folder, virtual environment, install packages *(folder and `.venv` created)*
-  - [ ] 0d: git, first commit *(add `.claude/` to `.gitignore`: it holds Claude's local settings and the venv reminder hook)*
+  - [x] 0c: Project folder, virtual environment, install numpy 2.5.3, pandas 3.0.6, matplotlib 3.11.2, pytest 9.1.1
+  - [x] 0d: git setup, `.gitignore`, first commit
 - [ ] Step 1: Just enough Python
 - [ ] Step 2: NumPy basics
 - [ ] Step 3: Worst-case stack (+ first test against a hand calc)
@@ -66,9 +66,29 @@ Commit to git at the end of every step.
 - **Code signing**: macOS checks a digital signature on downloaded apps (like a certificate of conformance). A half-copied app fails the check and is reported as "damaged."
 - **Hidden files**: names starting with `.` are hidden from `ls` and Finder. Used for support files you don't edit day to day (`.bash_profile`, `.venv`, `.git`).
 - **`.` and `..`**: `.` means "this folder" (`code .`), `..` means "the parent folder" (`cd ..`).
-- **Virtual environment (`.venv`)**: a private set of packages for one project, so other projects can't break it. Activating it puts `.venv/bin` at the front of the PATH.
+- **Virtual environment (`.venv`)**: a private set of packages for one project, so other projects can't break it. Activating it puts `.venv/bin` at the front of the PATH, but only in that Terminal window and only until it closes. That's why every new window needs `source .venv/bin/activate`.
 - **requirements.txt**: the project's bill of materials. `pip install -r requirements.txt` rebuilds the environment from it.
+- **Text files end with a newline.** git flags files that don't.
+- **Markdown (`.md`)**: plain text where `#` is a heading, `-` is a bullet and `|` builds a table. GitHub shows it formatted.
+- **Test, don't guess.** If unsure what a command did, check it (`which`, `echo $PATH`, `git status`).
+
+### git
+| git | What it is | PDM equivalent |
+|---|---|---|
+| repository | Project folder plus its full history (in the hidden `.git` folder) | The vault |
+| commit | A saved snapshot with a message | A released revision with its ECO description |
+| staging (`git add`) | Choosing which changes go into the next commit | Putting together the ECO package |
+| `.gitignore` | Files git should never track | |
+
+- `git config --global ...`: one-time setup (name, email, default branch `main`), saved in `~/.gitconfig`
+- `git init`: start tracking a folder
+- `git status`: what's changed and what's staged. Check it before every commit.
+- `git add .`: stage everything that isn't ignored
+- `git commit -m "Message"`: save the snapshot. Messages are short and imperative ("Add X", "Fix Y"). Always use `-m`; if an editor opens anyway, type `:q!` and Enter.
+- `git log --oneline`: list the history, one commit per line with its ID (hash)
+- What to ignore: anything that can be rebuilt from something else (`.venv/`, `__pycache__/`) or is personal to you or this Mac (`.claude/`, `.DS_Store`). Be explicit in `.gitignore` even if something is already ignored another way.
+- Ignored files are never backed up to GitHub.
 
 ## Next step
 
-Continue 0c from step 3: activate the virtual environment, create `requirements.txt` in VS Code, `pip install -r requirements.txt`, then verify with `pip list` and the `ready` test.
+**Step 1: Just enough Python.** Write and run a first `.py` file from VS Code; variables, numbers and text; lists and dictionaries; functions; loops. Exercises will use made-up stack-up dimensions.
