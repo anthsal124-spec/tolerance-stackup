@@ -31,7 +31,11 @@ Your prompt should start with `(.venv)`.
   - [x] 0b: Install Python 3.14 and VS Code, turn off Anaconda auto-start
   - [x] 0c: Project folder, virtual environment, install numpy 2.5.3, pandas 3.0.6, matplotlib 3.11.2, pytest 9.1.1
   - [x] 0d: git setup, `.gitignore`, first commit
-- [ ] Step 1: Just enough Python
+- [x] **Step 1: Just enough Python** *(finished 2026-10-05, scripts in `learning/`)*
+  - [x] 1a: Running Python, variables, types, f-strings, reading errors (`step1_variables.py`)
+  - [x] 1b: Lists and loops (`step1_lists.py`)
+  - [x] 1c: Dictionaries; a list of dictionaries as a stack-up table (`step1_dicts.py`)
+  - [x] 1d: Functions; one function reused on two stacks (`step1_functions.py`)
 - [ ] Step 2: NumPy basics
 - [ ] Step 3: Worst-case stack (+ first test against a hand calc)
 - [ ] Step 4: pandas: load stack from CSV, contribution table
@@ -89,6 +93,19 @@ Commit to git at the end of every step.
 - What to ignore: anything that can be rebuilt from something else (`.venv/`, `__pycache__/`) or is personal to you or this Mac (`.claude/`, `.DS_Store`). Be explicit in `.gitignore` even if something is already ignored another way.
 - Ignored files are never backed up to GitHub.
 
+### Python basics (Step 1)
+Full notes are in the reference doc: [Python for Engineering: Learning Reference](https://claude.ai/code/artifact/c7e06e4e-c58b-475e-9236-5f4b79f67acf).
+
+- Run a script with `python learning/file.py`. It runs top to bottom and stops at the first error.
+- `=` stores; `==` compares. Types: `int` (counts, signs), `float` (measurements), `str` (text). `50.0` carries no precision; tolerances are stored separately.
+- `**` is power; `^` is not. `//` floor division, `%` remainder. Floats can't store 0.1 exactly, so never compare floats with `==`.
+- f-strings: `f"{gap:.3f} mm"`; columns with `{name:<10}` and `{value:>10.3f}`. Label every printed number.
+- Read tracebacks bottom-up. The error shows where it failed, not always where the mistake is.
+- Lists: `[0]` is first, `[-1]` is last, `len()`, `sum()`. Loops need indentation. Running total starts at 0 before the loop.
+- Dictionaries look values up by key (`dim['nominal']`). A list of dictionaries is a stack-up table: one dictionary per row.
+- Functions: `def`, docstring first, `return` the result. Define them once at the top, not inside loops. Parameters are labels for whatever is passed in. Variables inside a function are local. Name functions with verbs (`calc_nominal_gap`), variables with nouns (`housing_gap`).
+- Python can't catch wrong logic (a sign error, a copy-paste name). That's what tests are for (Step 3).
+
 ## Next step
 
-**Step 1: Just enough Python.** Write and run a first `.py` file from VS Code; variables, numbers and text; lists and dictionaries; functions; loops. Exercises will use made-up stack-up dimensions.
+**Step 2: NumPy basics.** Arrays (a whole column of numbers at once), math on an entire array without a loop, and random sampling, which is the foundation for Monte Carlo in Step 6.
