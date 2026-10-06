@@ -24,6 +24,15 @@ Your prompt should start with `(.venv)`.
 | git | 2.39.2 (from Apple's command line developer tools) |
 | Anaconda | Still installed at `/opt/anaconda3` (old, Python 3.8), auto-start turned off. Not used for this project. |
 
+## Project layout
+
+| Path | What it is |
+|---|---|
+| `stackup.py` | The calculator module: functions only, imported by tests and scripts |
+| `tests/test_stackup.py` | pytest tests; run with `python -m pytest` from the project folder |
+| `learning/` | Practice scripts from Steps 1–2 |
+| `requirements.txt` | Packages to install into `.venv` |
+
 ## Roadmap
 
 - [x] **Step 0: Setup** *(finished 2026-10-02, first commit `1e237db`)*
@@ -39,7 +48,9 @@ Your prompt should start with `(.venv)`.
 - [x] **Step 2: NumPy basics** *(finished 2026-10-05)*
   - [x] 2a: Arrays and math on whole columns (`step2_arrays.py`)
   - [x] 2b: Random sampling: normal vs uniform, seeds, counting out-of-spec (`step2_random.py`)
-- [ ] Step 3: Worst-case stack (+ first test against a hand calc)
+- [x] **Step 3: Worst-case stack** *(finished 2026-10-06)*
+  - [x] 3a: Hand calc, then `calc_worst_case()` in the `stackup.py` module
+  - [x] 3b: First pytest tests (`tests/test_stackup.py`): housing stack 0.22–0.88 mm, slot stack 0.10–0.30 mm
 - [ ] Step 4: pandas: load stack from CSV, contribution table
 - [ ] Step 5: RSS
 - [ ] Step 6: Monte Carlo
@@ -120,6 +131,17 @@ Full notes are in the reference doc: [Python for Engineering: Learning Reference
 - A seed makes results repeatable, not more correct. Pick it once; don't shop for a nice answer.
 - Don't name variables after built-ins (`min`, `max`, `sum`).
 
+### Worst case and testing (Step 3)
+- A module (`stackup.py`) holds only imports and functions; importing runs the file, so no top-level prints. `if __name__ == "__main__":` runs a block only when the file is run directly.
+- `return min_gap, max_gap` returns a tuple; `min_gap, max_gap = calc_worst_case(...)` unpacks it. Importing a function doesn't run it, and its local variables don't exist outside; store what it returns.
+- `np.where(condition, if_true, if_false)` is an IF filled down a column. Max gap: openers at upper limit, closers at lower limit; min gap is the reverse.
+- Edit `stackup.py`, then restart `python` to see changes at the `>>>` prompt.
+- Tests: files `test_*.py`, functions `test_*()` with no parameters, ending in `assert`. Structure: set up inputs, call, compare to the hand calc.
+- Compare floats with `pytest.approx` (±1 part per million by default), never plain `==`.
+- `python -m pytest` uses the `.venv` Python and lets tests import `stackup` from the project folder. `.` = pass, `F` = fail; read failures bottom-up (`Expected` vs `Obtained`).
+- Break the code on purpose to see each test fail. A test that has never failed might not be checking anything.
+- Ignore `.pytest_cache/` (rebuilt every run) like `__pycache__/`.
+
 ## Next step
 
-**Step 3: Worst-case stack.** Write a worst-case stack-up function using arrays, check it against a stack you work by hand, and write the project's first pytest test so the computer does that check every time.
+**Step 4: pandas.** Load a stack from a CSV file into a DataFrame (a table whose columns are NumPy arrays and whose rows stay together), feed it to `calc_worst_case`, and build a contribution table showing how much each dimension adds to the worst-case spread.
