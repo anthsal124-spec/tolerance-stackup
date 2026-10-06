@@ -8,8 +8,8 @@ def calc_worst_case(nominals, plus_tols, minus_tols, directions):
 
     # Max gap: dimensions that open the gap at their upper limit,
     # dimensions that close it at their lower limit.
-    max_case = np.where(directions > 0, upper_limits, lower_limits)     
-    max_gap = np.sum(max_case * directions)                                     
+    max_case = np.where(directions > 0, upper_limits, lower_limits)
+    max_gap = np.sum(max_case * directions)
 
     # Min gap: the reverse.
     min_case = np.where(directions > 0, lower_limits, upper_limits)
