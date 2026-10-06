@@ -36,7 +36,9 @@ Your prompt should start with `(.venv)`.
   - [x] 1b: Lists and loops (`step1_lists.py`)
   - [x] 1c: Dictionaries; a list of dictionaries as a stack-up table (`step1_dicts.py`)
   - [x] 1d: Functions; one function reused on two stacks (`step1_functions.py`)
-- [ ] Step 2: NumPy basics
+- [x] **Step 2: NumPy basics** *(finished 2026-10-05)*
+  - [x] 2a: Arrays and math on whole columns (`step2_arrays.py`)
+  - [x] 2b: Random sampling: normal vs uniform, seeds, counting out-of-spec (`step2_random.py`)
 - [ ] Step 3: Worst-case stack (+ first test against a hand calc)
 - [ ] Step 4: pandas: load stack from CSV, contribution table
 - [ ] Step 5: RSS
@@ -106,6 +108,18 @@ Full notes are in the reference doc: [Python for Engineering: Learning Reference
 - Functions: `def`, docstring first, `return` the result. Define them once at the top, not inside loops. Parameters are labels for whatever is passed in. Variables inside a function are local. Name functions with verbs (`calc_nominal_gap`), variables with nouns (`housing_gap`).
 - Python can't catch wrong logic (a sign error, a copy-paste name). That's what tests are for (Step 3).
 
+### NumPy (Step 2)
+- `import numpy as np`. Packages only import if the `.venv` Python runs the script.
+- Lists repeat and join with `*` and `+`; arrays do element-wise math. Two same-length arrays multiply position by position, like a spreadsheet column.
+- Use NumPy's own functions on arrays (`np.sum`, `np.mean`, `np.std`), not Python's built-in `sum`.
+- `:.3f` works on single numbers, not arrays. `np.set_printoptions(precision=3, floatmode="fixed")` formats printed arrays.
+- Parallel arrays can get out of step like parallel lists; pandas (Step 4) binds columns into one table.
+- `rng = np.random.default_rng(seed=42)`. `rng.normal(mean, sigma, n)` and `rng.uniform(low, high, n)` return arrays of samples.
+- Normal with σ = tolerance/3: about 0.27% outside the limits. Uniform: never outside, but σ about 1.7 times larger. The assumed distribution changes a Monte Carlo answer.
+- Comparisons give True/False arrays; `np.sum` counts them and `np.mean` gives the fraction. Use `|` (or) and `&` (and), with each comparison in parentheses.
+- A seed makes results repeatable, not more correct. Pick it once; don't shop for a nice answer.
+- Don't name variables after built-ins (`min`, `max`, `sum`).
+
 ## Next step
 
-**Step 2: NumPy basics.** Arrays (a whole column of numbers at once), math on an entire array without a loop, and random sampling, which is the foundation for Monte Carlo in Step 6.
+**Step 3: Worst-case stack.** Write a worst-case stack-up function using arrays, check it against a stack you work by hand, and write the project's first pytest test so the computer does that check every time.
