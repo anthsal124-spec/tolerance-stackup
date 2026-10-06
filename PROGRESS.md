@@ -30,7 +30,9 @@ Your prompt should start with `(.venv)`.
 |---|---|
 | `stackup.py` | The calculator module: functions only, imported by tests and scripts |
 | `tests/test_stackup.py` | pytest tests; run with `python -m pytest` from the project folder |
-| `learning/` | Practice scripts from Steps 1–2 |
+| `data/` | Input stacks as CSV files (committed; tests build their own data instead) |
+| `learning/` | Practice scripts; ones that import `stackup` run with `python -m learning.<name>` or VS Code's ▷ |
+| `.vscode/settings.json` | Adds the project folder to `PYTHONPATH` in VS Code's terminal (ignored by git) |
 | `requirements.txt` | Packages to install into `.venv` |
 
 ## Roadmap
@@ -51,7 +53,10 @@ Your prompt should start with `(.venv)`.
 - [x] **Step 3: Worst-case stack** *(finished 2026-10-06)*
   - [x] 3a: Hand calc, then `calc_worst_case()` in the `stackup.py` module
   - [x] 3b: First pytest tests (`tests/test_stackup.py`): housing stack 0.22–0.88 mm, slot stack 0.10–0.30 mm
-- [ ] Step 4: pandas: load stack from CSV, contribution table
+- [x] **Step 4: pandas** *(finished 2026-10-06)*
+  - [x] 4a: Stack in `data/housing_stack.csv`, loaded into a DataFrame (`step4_pandas.py`)
+  - [x] 4b: `calc_wc_contributions()`: tolerance band and % contribution, largest first (`step4_contributions.py`)
+  - [x] 4c: Contribution test: sums to 100%, Housing leads at 30.30%, bands = worst-case range, input unchanged
 - [ ] Step 5: RSS
 - [ ] Step 6: Monte Carlo
 - [ ] Step 7: matplotlib plots
@@ -142,6 +147,20 @@ Full notes are in the reference doc: [Python for Engineering: Learning Reference
 - Break the code on purpose to see each test fail. A test that has never failed might not be checking anything.
 - Ignore `.pytest_cache/` (rebuilt every run) like `__pycache__/`.
 
+### pandas (Step 4)
+- CSV: a plain-text table, one row per line, header names on line 1. Header names must match the code's column names exactly. Commit input data; it can't be rebuilt.
+- `df = pd.read_csv("data/housing_stack.csv")`. Paths are relative to the folder you run from.
+- `df["nominal"]` is a column (Series); `.to_numpy()` makes it an array. `df[["name", "tol_band"]]` selects several columns. New columns: `df["upper"] = df["nominal"] + df["plus_tol"]`.
+- `df.sort_values("col", ascending=False)` returns a new sorted table; row labels move with their rows. `.iloc[0]` gets a row by position.
+- In a script, a bare expression prints nothing; use `print()`. `print(df.round(2).to_string(index=False))` for a clean table.
+- Python searches the script's own folder for imports. `python -m learning.script` (dots, no `.py`) or `PYTHONPATH` lets `learning/` scripts import `stackup`. Proper fix in Step 8: an installable package.
+- VS Code puts new files in the highlighted folder; click empty space first. `mv old new` moves or renames in Terminal.
+- Functions that take a DataFrame: `result = stack.copy()` first, work only on `result`, never read files inside. Select wanted columns instead of dropping unwanted ones.
+- Worst-case contribution = tolerance band / sum of bands. Bands add up to max gap − min gap. The biggest contributor isn't always the one to tighten: check the requirement and the cost first.
+- In long tracebacks, skip library files and find the last line in your own file. A SyntaxError stops all tests from loading.
+- Tests build their own DataFrame (`pd.DataFrame({...})`) like a gauge block, use `pytest.approx(x, abs=0.01)` to state a tolerance, and stop at the first failing assert. `in` / `not in` check membership.
+- `git restore <file>` undoes uncommitted changes to a file.
+
 ## Next step
 
-**Step 4: pandas.** Load a stack from a CSV file into a DataFrame (a table whose columns are NumPy arrays and whose rows stay together), feed it to `calc_worst_case`, and build a contribution table showing how much each dimension adds to the worst-case spread.
+**Step 5: RSS (statistical) stack.** Add `calc_rss()` to `stackup.py`: the assumptions behind it (normal distributions, ±3σ = tolerance), RSS contributions, and tests against a hand calc. Compare RSS with worst case for the housing stack.
