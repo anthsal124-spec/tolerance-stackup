@@ -16,3 +16,13 @@ def calc_worst_case(nominals, plus_tols, minus_tols, directions):
     min_gap = np.sum(min_case * directions)
 
     return min_gap, max_gap
+
+
+def calc_wc_contributions(stack):
+    """Return each dimension's worst-case tolerance band and % contribution, largest first."""
+    result = stack.copy()
+    result["tol_band"] = result["plus_tol"] + result["minus_tol"]
+    result["contribution_pct"] = result["tol_band"] / result["tol_band"].sum() * 100
+    result = result[["name", "tol_band", "contribution_pct"]]
+    sorted_result = result.sort_values("contribution_pct", ascending=False)
+    return sorted_result
