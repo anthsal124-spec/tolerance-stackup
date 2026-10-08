@@ -43,3 +43,13 @@ def calc_rss(nominals, plus_tols, minus_tols, directions):
 
     return min_gap, max_gap
 
+
+def calc_rss_contributions(stack):
+    """Return each dimension's RSS half band and % contribution, largest first."""
+    result = stack.copy()
+    result["half_band"] = (result["plus_tol"] + result["minus_tol"]) / 2
+    sum_of_squares = (result["half_band"] ** 2).sum()
+    result["contribution_pct"] = (result["half_band"] ** 2) / sum_of_squares * 100
+    result = result[["name", "half_band", "contribution_pct"]]
+    sorted_result = result.sort_values("contribution_pct", ascending=False)
+    return sorted_result

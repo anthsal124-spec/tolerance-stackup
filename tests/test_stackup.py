@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 import pandas as pd
 
-from stackup import calc_worst_case, calc_wc_contributions, calc_rss
+from stackup import calc_worst_case, calc_wc_contributions, calc_rss, calc_rss_contributions
 
 
 def test_worst_case_housing_stack():
@@ -68,3 +68,31 @@ def test_rss_housing_stack():
 
     assert min_gap == pytest.approx(0.3954, abs=0.0001)
     assert max_gap == pytest.approx(0.7046, abs=0.0001)
+
+
+def test_rss_contributions_housing_stack():
+    """Housing contributions add to 100%, Housing contributes 41.84%, and the root-sum-square of half bands equal the RSS +/- range."""
+    stack = pd.DataFrame({
+        "name": ["Housing", "Part A", "Part B", "Spacer", "Part C"],
+        "nominal": [50.00, 12.00, 15.50, 8.25, 13.75],
+        "plus_tol": [0.10, 0.05, 0.05, 0.00, 0.08],
+        "minus_tol": [0.10, 0.05, 0.05, 0.10, 0.08],
+        "direction": [1, -1, -1, -1, -1],
+    })
+
+    contributions = calc_rss_contributions(stack)
+
+    assert contributions["contribution_pct"].sum() == pytest.approx(100)
+    assert contributions["name"].iloc[0] == "Housing"
+    assert contributions["contribution_pct"].iloc[0] == pytest.approx(41.84, abs=0.01)
+
+    nominals = stack["nominal"].to_numpy()
+    plus_tols = stack["plus_tol"].to_numpy()
+    minus_tols = stack["minus_tol"].to_numpy()
+    directions = stack["direction"].to_numpy()
+
+    min_gap, max_gap = calc_rss(nominals, plus_tols, minus_tols, directions)
+
+    assert np.sqrt(np.sum(contributions["half_band"] ** 2)) == pytest.approx((max_gap - min_gap) / 2, abs=0.0001)
+    assert "half_band" not in stack.columns
+
