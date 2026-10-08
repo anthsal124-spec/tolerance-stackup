@@ -26,3 +26,19 @@ def calc_wc_contributions(stack):
     result = result[["name", "tol_band", "contribution_pct"]]
     sorted_result = result.sort_values("contribution_pct", ascending=False)
     return sorted_result
+
+
+def calc_rss(nominals, plus_tols, minus_tols, directions):
+    """Return the RSS minimum and maximum gap of a stack.
+
+    Assumes each dimension is normal, centered in its tolerance zone,
+    independent of the others, with tolerance = +/-3 sigma.
+    """
+    half_band = (plus_tols + minus_tols) / 2
+    gap_center = np.sum(directions * center)
+    rss_plus_minus = np.sqrt(np.sum(half_band ** 2))
+    min_gap = gap_center - rss_plus_minus
+    max_gap = gap_center + rss_plus_minus
+
+    return min_gap, max_gap
+

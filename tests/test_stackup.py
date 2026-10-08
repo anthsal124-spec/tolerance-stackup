@@ -58,7 +58,7 @@ def test_wc_contributions_housing_stack():
     assert "tol_band" not in stack.columns
 
 def test_rss_housing_stack():
-    """RSS gap for the housing stack matches the hand calc: 0.22 to 0.88 mm."""
+    """RSS gap for the housing stack matches the hand calc: 0.3954 to 0.7046 mm."""
     nominals = np.array([50.00, 12.00, 15.50, 8.25, 13.75])
     plus_tols = np.array([0.10, 0.05, 0.05, 0.00, 0.08])
     minus_tols = np.array([0.10, 0.05, 0.05, 0.10, 0.08])
