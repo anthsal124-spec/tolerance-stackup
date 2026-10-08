@@ -57,7 +57,10 @@ Your prompt should start with `(.venv)`.
   - [x] 4a: Stack in `data/housing_stack.csv`, loaded into a DataFrame (`step4_pandas.py`)
   - [x] 4b: `calc_wc_contributions()`: tolerance band and % contribution, largest first (`step4_contributions.py`)
   - [x] 4c: Contribution test: sums to 100%, Housing leads at 30.30%, bands = worst-case range, input unchanged
-- [ ] Step 5: RSS
+- [x] **Step 5: RSS** *(finished 2026-10-07)*
+  - [x] 5a: `calc_rss()`: centered, equal-bilateral method; housing gap 0.3954–0.7046 mm
+  - [x] 5b: `calc_rss_contributions()` and its cross-check test
+  - [x] 5c: Worst case vs RSS comparison with `pd.merge` (`step5_compare.py`): RSS range is 47% of worst case
 - [ ] Step 6: Monte Carlo
 - [ ] Step 7: matplotlib plots
 - [ ] Step 8: Make it a real project (module, CLI, tests, README)
@@ -161,6 +164,20 @@ Full notes are in the reference doc: [Python for Engineering: Learning Reference
 - Tests build their own DataFrame (`pd.DataFrame({...})`) like a gauge block, use `pytest.approx(x, abs=0.01)` to state a tolerance, and stop at the first failing assert. `in` / `not in` check membership.
 - `git restore <file>` undoes uncommitted changes to a file.
 
+### RSS (Step 5)
+- Method: center each dimension in its zone (nominal + (plus − minus)/2), half-band = (plus + minus)/2, gap center = Σ direction × center, RSS ± = √(Σ half²).
+- Assumptions (in the docstring): normal, centered, independent, tolerance = ±3σ. About 0.27% of assemblies still fall outside. RSS is weak with few contributors, off-center or correlated processes, or Cpk < 1.
+- `**` and `np.sqrt` work element by element. Keep a consistent interface: `calc_rss` returns `min_gap, max_gap` like `calc_worst_case`.
+- RSS contribution = half² / Σ half². Squaring turns a 2× tolerance into 4× influence (Housing 30% WC → 42% RSS). Tighten the biggest; small ones can often be loosened cheaply.
+- Multi-line docstrings: summary line, blank line, details. Lines under about 80 characters.
+- Debugging: when a result looks plausible but wrong, check intermediate values against the hand calc. Two bugs can cancel into a believable number.
+- A test is only as good as its reference value. Copy-pasted asserts can check the wrong column and never fail.
+- Before every commit: `python -m pytest`, then `git status`, then commit code and its test together. Each commit should leave the project working.
+- Totals belong in plain variables, not repeated in a column. `print(df.columns)` shows what a table has.
+- `pd.merge(a, b, on="name", suffixes=("_wc", "_rss"))` joins tables by a shared column, like VLOOKUP.
+- Scripts have no tests, so sanity-check printed numbers against something known.
+- Choosing WC or RSS: ask for the requirement, the consequence of a failure, the volume, process data and the number of contributors. The method sets how tight the part tolerances must be.
+
 ## Next step
 
-**Step 5: RSS (statistical) stack.** Add `calc_rss()` to `stackup.py`: the assumptions behind it (normal distributions, ±3σ = tolerance), RSS contributions, and tests against a hand calc. Compare RSS with worst case for the housing stack.
+**Step 6: Monte Carlo.** Simulate thousands of housing assemblies with random part dimensions (Step 2's sampling), count how many fall outside the RSS and worst-case ranges, compare normal and uniform assumptions, and check that the answer converges as the number of samples grows.
