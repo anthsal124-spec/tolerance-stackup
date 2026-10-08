@@ -34,6 +34,7 @@ def calc_rss(nominals, plus_tols, minus_tols, directions):
     Assumes each dimension is normal, centered in its tolerance zone,
     independent of the others, with tolerance = +/-3 sigma.
     """
+    center = nominals + (plus_tols - minus_tols) / 2
     half_band = (plus_tols + minus_tols) / 2
     gap_center = np.sum(directions * center)
     rss_plus_minus = np.sqrt(np.sum(half_band ** 2))
