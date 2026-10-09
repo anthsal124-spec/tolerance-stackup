@@ -53,3 +53,22 @@ def calc_rss_contributions(stack):
     result = result[["name", "half_band", "contribution_pct"]]
     sorted_result = result.sort_values("contribution_pct", ascending=False)
     return sorted_result
+
+
+def simulate_gaps(nominals, plus_tols, minus_tols, directions, n_samples=100_000, seed=42):
+    """Return an array of simulated gaps, one per virtual assembly.
+
+    Assumes each dimension is normal, centered in its tolerance zone,
+    independent of the others, with sigma = half-band / 3.
+    """
+
+    rng = np.random.default_rng(seed)
+    centers = nominals + (plus_tols - minus_tols) / 2
+    half_bands = (plus_tols + minus_tols) / 2
+    sigmas = half_bands / 3
+
+    gaps = np.zeros(n_samples)
+    for center, sigma, direction in zip(centers, sigmas, directions):
+        gaps = gaps + direction * rng.normal(center, sigma, n_samples)
+
+    return gaps
