@@ -61,7 +61,10 @@ Your prompt should start with `(.venv)`.
   - [x] 5a: `calc_rss()`: centered, equal-bilateral method; housing gap 0.3954–0.7046 mm
   - [x] 5b: `calc_rss_contributions()` and its cross-check test
   - [x] 5c: Worst case vs RSS comparison with `pd.merge` (`step5_compare.py`): RSS range is 47% of worst case
-- [ ] Step 6: Monte Carlo
+- [ ] **Step 6: Monte Carlo** *(in progress)*
+  - [x] 6a: `simulate_gaps()` and `step6_monte_carlo.py`: 100,000 assemblies, mean 0.5499 mm, σ 0.0517 mm, 0.283% outside RSS, 0% outside worst case
+  - [ ] 6b: Uniform distributions and yield against a gap requirement
+  - [ ] 6c: Convergence, and testing code that uses random numbers
 - [ ] Step 7: matplotlib plots
 - [ ] Step 8: Make it a real project (module, CLI, tests, README)
 
@@ -178,6 +181,16 @@ Full notes are in the reference doc: [Python for Engineering: Learning Reference
 - Scripts have no tests, so sanity-check printed numbers against something known.
 - Choosing WC or RSS: ask for the requirement, the consequence of a failure, the volume, process data and the number of contributors. The method sets how tight the part tolerances must be.
 
+### Monte Carlo so far (Step 6a)
+- `simulate_gaps()` builds 100,000 virtual assemblies: start every gap at `np.zeros(n_samples)`, then for each dimension add `direction × rng.normal(center, sigma, n_samples)`. The loop runs once per dimension; NumPy handles all assemblies in each pass.
+- Default parameters (`n_samples=100_000, seed=42`) apply unless the caller overrides them.
+- `zip(centers, sigmas, directions)` walks arrays together. Plural arrays go inside `zip`; singular names (created by the loop) go in the body. `sigma` vs `sigmas` is one letter and a different object.
+- A shape error like `(100000,)` vs `(5,)`: find the variable with that size.
+- `return` inside a loop exits on the first pass.
+- In scripts, get limits from the functions and counts from the data (`n_samples` passed in, or `len(gaps)`), never typed-in numbers.
+- Turn on File → Auto Save so the files on disk match the screen.
+- Matching RSS (0.283% vs 0.27%) is a calibration run. Monte Carlo's value is where RSS can't go: non-normal or shifted distributions, nonlinear stacks, and yield against a requirement.
+
 ## Next step
 
-**Step 6: Monte Carlo.** Simulate thousands of housing assemblies with random part dimensions (Step 2's sampling), count how many fall outside the RSS and worst-case ranges, compare normal and uniform assumptions, and check that the answer converges as the number of samples grows.
+**Step 6b: uniform distributions and yield.** Add a distribution option to `simulate_gaps`, simulate the housing stack with uniform part distributions, and calculate the percentage of assemblies outside a gap requirement, where worst case and RSS give different answers. Read the 6a walkthrough in the reference doc first.
