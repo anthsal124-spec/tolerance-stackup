@@ -61,10 +61,11 @@ Your prompt should start with `(.venv)`.
   - [x] 5a: `calc_rss()`: centered, equal-bilateral method; housing gap 0.3954–0.7046 mm
   - [x] 5b: `calc_rss_contributions()` and its cross-check test
   - [x] 5c: Worst case vs RSS comparison with `pd.merge` (`step5_compare.py`): RSS range is 47% of worst case
-- [ ] **Step 6: Monte Carlo** *(in progress)*
+- [x] **Step 6: Monte Carlo** *(finished 2026-10-12; 9 tests passing)*
   - [x] 6a: `simulate_gaps()` and `step6_monte_carlo.py`: 100,000 assemblies, mean 0.5499 mm, σ 0.0517 mm, 0.283% outside RSS, 0% outside worst case
-  - [ ] 6b: Uniform distributions and yield against a gap requirement
-  - [ ] 6c: Convergence, and testing code that uses random numbers
+  - [x] 6b: `distribution="normal"`/`"uniform"` option and `calc_pct_out_of_spec()` (`step6_yield.py`): requirement 0.35–0.75 mm gives 0.008% (normal) vs 1.866% (uniform)
+  - [x] 6c: Convergence experiments (`step6_convergence.py`): error shrinks with √samples
+  - [x] 6d: Tests for the simulation: reproducible with a seed, matches RSS within 2%, rejects unknown distributions
 - [ ] Step 7: matplotlib plots
 - [ ] Step 8: Make it a real project (module, CLI, tests, README)
 
@@ -191,6 +192,20 @@ Full notes are in the reference doc: [Python for Engineering: Learning Reference
 - Turn on File → Auto Save so the files on disk match the screen.
 - Matching RSS (0.283% vs 0.27%) is a calibration run. Monte Carlo's value is where RSS can't go: non-normal or shifted distributions, nonlinear stacks, and yield against a requirement.
 
+### Monte Carlo, continued (Steps 6b–6d)
+- `if` / `elif` / `else` chooses which lines run; conditions use `==`. `raise ValueError(f"...")` refuses bad input with a clear message.
+- Single values combine with `and` / `or`; arrays combine with `&` / `|`.
+- Adding a parameter with a default (`distribution="normal"`) adds a feature without breaking existing callers.
+- One function, one job: `simulate_gaps` makes gaps, `calc_pct_out_of_spec(gaps, lower, upper)` counts. The second works on any gaps, even measured ones. `calc_...` functions return; scripts print.
+- Pass arguments by name (`lower_limit=..., upper_limit=...`) so the order can't be swapped.
+- Same tolerances, requirement 0.35–0.75 mm: worst case FAIL, RSS PASS, Monte Carlo 0.008% (normal) vs 1.866% (uniform). Believe neither without process data; report both with their assumptions.
+- A `for` line walks through what comes after `in`; call the function once per pass. Loops can nest. Things that don't change go before the loop. `{n:>10,}` adds thousands separators.
+- Sampling error shrinks with √n and depends on the number of hits, not samples: aim for 100+ hits. 8 hits in 100,000 (0.008%) was really about 0.0105%.
+- "All tests pass" only covers code the tests call. Testing random code: fix the seed (`np.array_equal`), test statistics with a tolerance sized to sampling scatter (`rel=0.02`), test simple cases exactly, and `with pytest.raises(ValueError):` for bad input.
+- Test what the code promises, not the exact digits it happened to produce. The `>` marker shows which assert failed.
+- A helper like `housing_arrays()` in the test file removes repeated setup. Changing tests can break them; the summary at the bottom of pytest's output is the to-do list.
+- `git show HEAD:path/to/file` prints the last committed version; `| grep -A 6 "text"` filters it. `git status` after a deliberate break confirms it's fully undone.
+
 ## Next step
 
-**Step 6b: uniform distributions and yield.** Add a distribution option to `simulate_gaps`, simulate the housing stack with uniform part distributions, and calculate the percentage of assemblies outside a gap requirement, where worst case and RSS give different answers. Read the 6a walkthrough in the reference doc first.
+**Step 7: matplotlib plots.** Three plots, clean enough for a portfolio: a histogram of the simulated gaps with the requirement and the worst-case and RSS limits marked, a contribution chart, and a side-by-side comparison of the three methods.
