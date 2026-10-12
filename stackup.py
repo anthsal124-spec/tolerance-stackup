@@ -55,11 +55,12 @@ def calc_rss_contributions(stack):
     return sorted_result
 
 
-def simulate_gaps(nominals, plus_tols, minus_tols, directions, n_samples=100_000, seed=42):
+def simulate_gaps(nominals, plus_tols, minus_tols, directions, n_samples=100_000, seed=42, distribution="normal"):
     """Return an array of simulated gaps, one per virtual assembly.
 
-    Assumes each dimension is normal, centered in its tolerance zone,
-    independent of the others, with sigma = half-band / 3.
+    Each dimension is centered in its tolerance zone and independent
+    of the others. distribution="normal" uses sigma = half-band / 3;
+    distribution="uniform" spreads values evenly across the zone.
     """
 
     rng = np.random.default_rng(seed)
@@ -68,7 +69,25 @@ def simulate_gaps(nominals, plus_tols, minus_tols, directions, n_samples=100_000
     sigmas = half_bands / 3
 
     gaps = np.zeros(n_samples)
-    for center, sigma, direction in zip(centers, sigmas, directions):
-        gaps = gaps + direction * rng.normal(center, sigma, n_samples)
+    for center, sigma, half_band, direction in zip(centers, sigmas, half_bands, directions):
+        low = center - half_band
+        high = center + half_band
+        if distribution == "normal":
+            samples = rng.normal(center, sigma, n_samples)
+        elif distribution == "uniform":
+            samples = rng.uniform(low, high, n_samples)
+        else:
+            raise ValueError(f"Unknown distribution: {distribution}")
+        gaps = gaps + direction * samples
 
     return gaps
+
+
+def calc_pct_out_of_spec(gaps, lower_limit, upper_limit):
+    """Return the percentage of gaps outside the lower and upper limits"""
+
+    outside = (gaps < lower_limit) | (gaps > upper_limit)
+    pct_outside = np.mean(outside) * 100
+
+    return pct_outside
+
