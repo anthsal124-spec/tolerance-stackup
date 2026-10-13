@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-from stackup import simulate_gaps, calc_rss, calc_worst_case, calc_pct_out_of_spec
+from stackup import simulate_gaps, calc_rss, calc_worst_case
+from plots import plot_gap_histogram
 
 # Load the CSV
 df = pd.read_csv("data/housing_stack.csv")
@@ -13,48 +14,28 @@ directions = df["direction"].to_numpy()
 # Simulate 100,000 gaps with normal distribution
 n_samples = 100_000
 
-gaps = simulate_gaps(nominals, plus_tols, minus_tols, directions, n_samples=n_samples)
+gaps_normal = simulate_gaps(nominals, plus_tols, minus_tols, directions, n_samples=n_samples)
+gaps_uniform = simulate_gaps(nominals, plus_tols, minus_tols, directions, n_samples=n_samples, distribution="uniform")
 
 # Requirement
 lower_limit = 0.35
 upper_limit = 0.75
 
 # Worst case limits
-min_gap_wc, max_gap_wc = calc_worst_case(nominals, plus_tols, minus_tols, directions)
+wc_limits = calc_worst_case(nominals, plus_tols, minus_tols, directions)
 
 # RSS limits
-min_gap_rss, max_gap_rss = calc_rss(nominals, plus_tols, minus_tols, directions)
+rss_limits = calc_rss(nominals, plus_tols, minus_tols, directions)
 
-# Draw a histogram with 60 bins
-fig, ax = plt.subplots(figsize=(8, 4.5), layout="constrained")
+# titles
+title_normal = f"Simulated gap, housing stack ({n_samples:,} assemblies, normal parts)"
+title_uniform = f"Simulated gap, housing stack ({n_samples:,} assemblies, uniform parts)"
 
-ax.hist(gaps, bins=60, color="#2a78d6")
-
-ax.set_xlabel("Gap (mm)")
-ax.set_ylabel("Number of assemblies")
-
-# Draw 6 limits
-ax.axvline(lower_limit, color="#0b0b0b", linestyle="-", linewidth=1.5, label="Requirement limits")
-ax.axvline(upper_limit, color="#0b0b0b", linestyle="-", linewidth=1.5)
-
-ax.axvline(min_gap_rss, color="#eb6834", linestyle="--", linewidth=1.5, label="RSS range")
-ax.axvline(max_gap_rss, color="#eb6834", linestyle="--", linewidth=1.5)
-
-ax.axvline(min_gap_wc, color="#1baf7a", linestyle=":", linewidth=1.5, label="Worst-case range")
-ax.axvline(max_gap_wc, color="#1baf7a", linestyle=":", linewidth=1.5)
-
-ax.legend(loc="upper left", bbox_to_anchor=(1.02, 1), frameon=False)
-
-# Report result
-pct_outside = calc_pct_out_of_spec(gaps, lower_limit, upper_limit)
-
-# Remove top and right edges, add second line to title
-ax.spines[["top", "right"]].set_visible(False)
-
-title = f"Simulated gap, housing stack ({n_samples:,} assemblies, normal parts)"
-result = f"{pct_outside:.3f}% outside the {lower_limit:.2f} to {upper_limit:.2f} mm requirement"
-ax.set_title(f"{title}\n{result}")
+# create normal and uniform plot
+fig_normal, ax_normal = plot_gap_histogram(gaps_normal, lower_limit, upper_limit, rss_limits, wc_limits, title_normal)
+fig_uniform, ax_uniform = plot_gap_histogram(gaps_uniform, lower_limit, upper_limit, rss_limits, wc_limits, title_uniform)
 
 # Save
-fig.savefig("plots/gap_histogram.png", dpi=150, bbox_inches="tight")
+fig_normal.savefig("plots/gap_histogram_normal.png", dpi=150, bbox_inches="tight")
+fig_uniform.savefig("plots/gap_histogram_uniform.png", dpi=150, bbox_inches="tight")
 plt.show()
