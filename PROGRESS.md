@@ -29,6 +29,8 @@ Your prompt should start with `(.venv)`.
 | Path | What it is |
 |---|---|
 | `stackup.py` | The calculator module: functions only, imported by tests and scripts |
+| `plots.py` | Plotting module: functions that return a figure; scripts save and show it |
+| `plots/` | Generated images (ignored by git; rebuilt by the `step7_*.py` scripts) |
 | `tests/test_stackup.py` | pytest tests; run with `python -m pytest` from the project folder |
 | `data/` | Input stacks as CSV files (committed; tests build their own data instead) |
 | `learning/` | Practice scripts; ones that import `stackup` run with `python -m learning.<name>` or VS Code's ▷ |
@@ -66,7 +68,12 @@ Your prompt should start with `(.venv)`.
   - [x] 6b: `distribution="normal"`/`"uniform"` option and `calc_pct_out_of_spec()` (`step6_yield.py`): requirement 0.35–0.75 mm gives 0.008% (normal) vs 1.866% (uniform)
   - [x] 6c: Convergence experiments (`step6_convergence.py`): error shrinks with √samples
   - [x] 6d: Tests for the simulation: reproducible with a seed, matches RSS within 2%, rejects unknown distributions
-- [ ] Step 7: matplotlib plots
+- [x] **Step 7: matplotlib plots** *(finished 2026-10-13)*
+  - [x] 7a: First histogram of simulated gaps (`step7_histogram.py`)
+  - [x] 7b: Requirement, RSS and worst-case limits marked; `plot_gap_histogram()` in the new `plots.py` module
+  - [x] 7c: `plot_contributions()`: worst case vs RSS, sorted (`step7_contributions.py`)
+  - [x] 7d: `plot_gap_comparison()`: normal vs uniform on shared axes (`step7_comparison.py`)
+  - [ ] Optional: notebooks (scripts vs notebooks), not covered yet
 - [ ] Step 8: Make it a real project (module, CLI, tests, README)
 
 Commit to git at the end of every step.
@@ -206,6 +213,24 @@ Full notes are in the reference doc: [Python for Engineering: Learning Reference
 - A helper like `housing_arrays()` in the test file removes repeated setup. Changing tests can break them; the summary at the bottom of pytest's output is the to-do list.
 - `git show HEAD:path/to/file` prints the last committed version; `| grep -A 6 "text"` filters it. `git status` after a deliberate break confirms it's fully undone.
 
+### matplotlib (Step 7)
+- `fig, ax = plt.subplots(figsize=(8, 4.5), layout="constrained")`: `fig` is the sheet, `ax` is one plot on it. `layout="constrained"` keeps everything (including an outside legend) on the sheet.
+- `ax.hist(gaps, bins=60, color="#2a78d6")`. Too few bins hide the shape; too many show sampling noise.
+- `ax.axvline(x, color=..., linestyle=..., label=...)` for limits; `ax.legend(loc="upper left", bbox_to_anchor=(1.02, 1), frameon=False)` puts the legend outside. The legend lists what has been drawn so far, so call it after the lines.
+- Always label axes with units and give a title that says what and how many. Build labels from variables (`{n_samples:,}`), not typed-in numbers. Sentence case.
+- Two cues per series (color and line style); each method keeps its color in every plot: Monte Carlo blue `#2a78d6`, RSS orange `#eb6834`, worst case green `#1baf7a`, requirement near-black.
+- `ax.spines[["top", "right"]].set_visible(False)` removes ink that carries no data. `\n` starts a new line in a string.
+- `fig.savefig("plots/name.png", dpi=150, bbox_inches="tight")`, then `plt.show()`. The pop-up window is not the saved file.
+- `plots/` is generated output, so it's ignored. README images get committed separately in Step 8.
+- Bars: `ax.barh(positions ± bar_height / 2, values, height=bar_height)`, `np.arange(n)` for slots, `ax.set_yticks(positions, labels=names)`, `ax.invert_yaxis()`, `ax.bar_label(bars, fmt="%.1f%%", padding=3)`, `ax.margins(x=0.1)`. Sort by what the reader needs to see first.
+- Plot functions take data and return `fig, ax`; they don't load, simulate, save or show. A module holds only imports and functions.
+- Optional parameter: `ax=None` with `if ax is None:` lets a function draw on a plot it's given. `if show_legend:` runs a line only when a flag is true.
+- `plt.subplots(2, 1, sharex=True, sharey=True)` gives stacked plots on the same scales; `axes[0]` is the top one. `fig.suptitle(title)` titles the sheet. Comparing plots with different scales misleads.
+- Once one argument is passed by name, all later ones must be. An argument should be a value (`ax=axes[0]`), never a `set_...()` call, which returns `None`.
+- Code after a `return` never runs (VS Code dims it). After copying an example, check every line, label and unit ("kg" on a % chart).
+- Look at the saved image every time. A script can run without errors and still produce a wrong plot.
+- `rm <file>` deletes permanently.
+
 ## Next step
 
-**Step 7: matplotlib plots.** Three plots, clean enough for a portfolio: a histogram of the simulated gaps with the requirement and the worst-case and RSS limits marked, a contribution chart, and a side-by-side comparison of the three methods.
+**Step 8: make it a real project.** Turn the code into an installable package (`pyproject.toml`, `pip install -e .`), add a command-line interface, write a README with the plots, and tidy the git history. Optional first: a short look at notebooks.
