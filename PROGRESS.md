@@ -73,7 +73,7 @@ Your prompt should start with `(.venv)`.
   - [x] 7b: Requirement, RSS and worst-case limits marked; `plot_gap_histogram()` in the new `plots.py` module
   - [x] 7c: `plot_contributions()`: worst case vs RSS, sorted (`step7_contributions.py`)
   - [x] 7d: `plot_gap_comparison()`: normal vs uniform on shared axes (`step7_comparison.py`)
-  - [ ] Optional: notebooks (scripts vs notebooks), not covered yet
+  - [ ] Notebooks (scripts vs notebooks): a 15-minute session, planned for the start of next session, before Step 8
 - [ ] Step 8: Make it a real project (module, CLI, tests, README)
 
 Commit to git at the end of every step.
@@ -233,4 +233,6 @@ Full notes are in the reference doc: [Python for Engineering: Learning Reference
 
 ## Next step
 
-**Step 8: make it a real project.** Turn the code into an installable package (`pyproject.toml`, `pip install -e .`), add a command-line interface, write a README with the plots, and tidy the git history. Optional first: a short look at notebooks.
+**First, 15 minutes on notebooks:** what a Jupyter notebook is, running one in VS Code, and when to use a notebook instead of a script.
+
+**Then Step 8: make it a real project.** Turn the code into an installable package (`pyproject.toml`, `pip install -e .`), add a command-line interface, write a README with the plots, and tidy the git history.
