@@ -1,4 +1,5 @@
 # Tolerance Stack-Up Calculator
+[![tests](https://github.com/anthsal124-spec/tolerance-stackup/actions/workflows/tests.yml/badge.svg)](https://github.com/anthsal124-spec/tolerance-stackup/actions/workflows/tests.yml)
 
 A Python tool for 1D tolerance stack-ups that compares worst-case, RSS (root sum square) and Monte Carlo analysis on the same stack, so the method and its assumptions are visible next to every result.
 
@@ -44,7 +45,7 @@ The housing drives the variation under both methods, and more so under RSS (41.8
 Requires Python 3.11 or newer.
 
 ```bash
-git clone <repository-url>
+git clone <https://github.com/anthsal124-spec/tolerance-stackup.git>
 cd tolerance-stackup
 python3 -m venv .venv
 source .venv/bin/activate
