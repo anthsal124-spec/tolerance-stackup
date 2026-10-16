@@ -8,6 +8,10 @@ version = "0.1.0"
 description = "Worst-case, RSS and Monte Carlo tolerance stack-up calculator"
 requires-python = ">=3.11"
 dependencies = ["numpy", "pandas", "matplotlib"]
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Anthony Saldutti" }]
 
 [project.optional-dependencies]
 dev = ["pytest", "ipykernel"]
