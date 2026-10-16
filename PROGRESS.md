@@ -73,7 +73,7 @@ Your prompt should start with `(.venv)`.
   - [x] 7b: Requirement, RSS and worst-case limits marked; `plot_gap_histogram()` in the new `plots.py` module
   - [x] 7c: `plot_contributions()`: worst case vs RSS, sorted (`step7_contributions.py`)
   - [x] 7d: `plot_gap_comparison()`: normal vs uniform on shared axes (`step7_comparison.py`)
-  - [ ] Notebooks (scripts vs notebooks): a 15-minute session, planned for the start of next session, before Step 8
+  - [x] Notebooks (2026-10-16): `step7_what_if.ipynb`, tightening Part C to ±0.05 narrows RSS from 0.395–0.705 to 0.409–0.691 mm
 - [ ] Step 8: Make it a real project (module, CLI, tests, README)
 
 Commit to git at the end of every step.
@@ -231,8 +231,15 @@ Full notes are in the reference doc: [Python for Engineering: Learning Reference
 - Look at the saved image every time. A script can run without errors and still produce a wrong plot.
 - `rm <file>` deletes permanently.
 
+### Notebooks
+- A notebook (`.ipynb`) is cells: code cells show their output underneath; Markdown cells hold notes. Like a calc package or a MATLAB live script.
+- Scripts and modules hold the reusable, tested code; notebooks import it for exploring, what-ifs and explaining an analysis. Never copy a function into a notebook.
+- Setup: VS Code's Jupyter extension, `ipykernel` in `requirements.txt` (then `pip install -r requirements.txt`), the `.venv` kernel, and `"jupyter.notebookFileRoot": "${workspaceFolder}"` so it runs from the project folder.
+- Shift + Enter runs a cell. The last line of a cell is displayed automatically (`df` shows a table). Plots appear without `plt.show()`.
+- `df.loc[row, ["col1", "col2"]] = value` changes cells. A misspelled column name silently creates a new column.
+- Hidden state: the kernel remembers values from every cell run, in the order actually run. Restart → Run All before trusting, sharing or committing; execution numbers 1, 2, 3 in order show a clean run.
+- Give each name one meaning per notebook; don't overwrite the original arrays with what-if values.
+
 ## Next step
 
-**First, 15 minutes on notebooks:** what a Jupyter notebook is, running one in VS Code, and when to use a notebook instead of a script.
-
-**Then Step 8: make it a real project.** Turn the code into an installable package (`pyproject.toml`, `pip install -e .`), add a command-line interface, write a README with the plots, and tidy the git history.
+**Step 8: make it a real project.** Turn the code into an installable package (`pyproject.toml`, `pip install -e .`), add a command-line interface, write a README with the plots, and tidy the git history.
