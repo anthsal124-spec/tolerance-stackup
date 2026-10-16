@@ -1,5 +1,5 @@
 import pandas as pd
-from stackup import calc_worst_case
+from stackup.core import calc_worst_case
 
 df = pd.read_csv("data/housing_stack.csv")
 print(df)

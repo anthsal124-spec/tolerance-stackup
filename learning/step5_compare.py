@@ -1,6 +1,6 @@
 import pandas as pd
 
-from stackup import calc_worst_case, calc_wc_contributions, calc_rss, calc_rss_contributions
+from stackup.core import calc_worst_case, calc_wc_contributions, calc_rss, calc_rss_contributions
 
 df = pd.read_csv("data/housing_stack.csv")
 

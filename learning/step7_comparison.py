@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-from stackup import simulate_gaps, calc_rss, calc_worst_case
-from plots import plot_gap_comparison
+from stackup.core import simulate_gaps, calc_rss, calc_worst_case
+from stackup.plots import plot_gap_comparison
 
 # Load the CSV
 df = pd.read_csv("data/housing_stack.csv")

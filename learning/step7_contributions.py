@@ -1,8 +1,8 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from stackup import calc_wc_contributions, calc_rss_contributions
-from plots import plot_contributions
+from stackup.core import calc_wc_contributions, calc_rss_contributions
+from stackup.plots import plot_contributions
 
 df = pd.read_csv("data/housing_stack.csv")
 

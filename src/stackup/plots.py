@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from stackup import calc_pct_out_of_spec
+from stackup.core import calc_pct_out_of_spec
 
 
 def plot_gap_histogram(gaps, lower_limit, upper_limit, rss_limits, wc_limits, title, ax=None, show_legend=True):

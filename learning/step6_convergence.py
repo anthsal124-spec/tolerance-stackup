@@ -1,5 +1,5 @@
 import pandas as pd
-from stackup import calc_rss, simulate_gaps, calc_pct_out_of_spec
+from stackup.core import calc_rss, simulate_gaps, calc_pct_out_of_spec
 
 df = pd.read_csv("data/housing_stack.csv")
 

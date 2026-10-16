@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-from stackup import simulate_gaps, calc_rss, calc_worst_case
+from stackup.core import simulate_gaps, calc_rss, calc_worst_case
 
 df = pd.read_csv("data/housing_stack.csv")
 

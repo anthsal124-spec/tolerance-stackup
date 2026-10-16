@@ -1,5 +1,5 @@
 import pandas as pd
-from stackup import simulate_gaps, calc_pct_out_of_spec, calc_rss, calc_worst_case
+from stackup.core import simulate_gaps, calc_pct_out_of_spec, calc_rss, calc_worst_case
 
 lower_limit = 0.35
 upper_limit = 0.75
