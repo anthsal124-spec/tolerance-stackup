@@ -14,3 +14,6 @@ dev = ["pytest", "ipykernel"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[project.scripts]
+stackup = "stackup.cli:main"
