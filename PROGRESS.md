@@ -26,20 +26,29 @@ Your prompt should start with `(.venv)`.
 
 ## Project layout
 
+Public repository: https://github.com/anthsal124-spec/tolerance-stackup
+
 | Path | What it is |
 |---|---|
-| `stackup.py` | The calculator module: functions only, imported by tests and scripts |
-| `plots.py` | Plotting module: functions that return a figure; scripts save and show it |
-| `plots/` | Generated images (ignored by git; rebuilt by the `step7_*.py` scripts) |
-| `tests/test_stackup.py` | pytest tests; run with `python -m pytest` from the project folder |
+| `src/stackup/core.py` | Calculations: worst case, RSS, contributions, Monte Carlo, out-of-spec percentage |
+| `src/stackup/plots.py` | Plotting functions that return a figure; callers save and show it |
+| `src/stackup/cli.py` | The `stackup` command |
+| `src/stackup/__init__.py` | Makes `from stackup import calc_rss` work |
+| `pyproject.toml` | Name, version, dependencies, `stackup` command; install with `pip install -e ".[dev]"` |
+| `tests/test_stackup.py` | pytest tests; run with `pytest` |
+| `.github/workflows/tests.yml` | Runs the tests on GitHub on every push, Python 3.11 to 3.14 |
 | `data/` | Input stacks as CSV files (committed; tests build their own data instead) |
-| `learning/` | Practice scripts; ones that import `stackup` run with `python -m learning.<name>` or VS Code's ▷ |
-| `.vscode/settings.json` | Adds the project folder to `PYTHONPATH` in VS Code's terminal (ignored by git) |
-| `requirements.txt` | Packages to install into `.venv` |
+| `docs/images/` | The README's images (committed copies of chosen plots) |
+| `plots/` | Generated images (ignored by git) |
+| `learning/` | Practice scripts and the what-if notebook; run them directly, e.g. `python learning/step5_compare.py` |
+| `README.md`, `LICENSE` | Project front page; MIT license |
+| `.vscode/settings.json` | Notebook folder setting (ignored by git) |
 
 ## Roadmap
 
-- [x] **Step 0: Setup** *(finished 2026-10-02, first commit `1e237db`)*
+*Commit IDs below the 2026-10-16 email rewrite changed, so old IDs in these notes no longer match the history.*
+
+- [x] **Step 0: Setup** *(finished 2026-10-02)*
   - [x] 0a: Terminal basics, check what's installed
   - [x] 0b: Install Python 3.14 and VS Code, turn off Anaconda auto-start
   - [x] 0c: Project folder, virtual environment, install numpy 2.5.3, pandas 3.0.6, matplotlib 3.11.2, pytest 9.1.1
@@ -74,7 +83,11 @@ Your prompt should start with `(.venv)`.
   - [x] 7c: `plot_contributions()`: worst case vs RSS, sorted (`step7_contributions.py`)
   - [x] 7d: `plot_gap_comparison()`: normal vs uniform on shared axes (`step7_comparison.py`)
   - [x] Notebooks (2026-10-16): `step7_what_if.ipynb`, tightening Part C to ±0.05 narrows RSS from 0.395–0.705 to 0.409–0.691 mm
-- [ ] Step 8: Make it a real project (module, CLI, tests, README)
+- [x] **Step 8: Make it a real project** *(finished 2026-10-16, released as v1.0.0)*
+  - [x] 8a: `src/stackup/` package, `pyproject.toml`, editable install
+  - [x] 8b: `stackup` command-line interface with argparse
+  - [x] 8c: README with results, usage, methods and images
+  - [x] 8d: No-reply commit email, MIT license, published to GitHub, tests on GitHub Actions, v1.0.0 tag
 
 Commit to git at the end of every step.
 
@@ -240,6 +253,27 @@ Full notes are in the reference doc: [Python for Engineering: Learning Reference
 - Hidden state: the kernel remembers values from every cell run, in the order actually run. Restart → Run All before trusting, sharing or committing; execution numbers 1, 2, 3 in order show a clean run.
 - Give each name one meaning per notebook; don't overwrite the original arrays with what-if values.
 
+### Packaging and publishing (Step 8)
+- A package is a folder of modules with `__init__.py` (an assembly); `__init__.py` lists what `import stackup` offers. `src/` layout makes tests use the installed package.
+- `pyproject.toml` is the title block and BOM: name, version, dependencies, extras (`[dev]`), the `stackup` command. It replaced `requirements.txt`.
+- `pip install -e ".[dev]"`: editable install links to `src/`, so edits apply without reinstalling. Changes to `pyproject.toml` itself (like a new command) need a reinstall. It creates `*.egg-info/` (ignored).
+- `git mv` moves a file and keeps its history; `git rm` deletes one; `git add -A` stages everything (review with `git status`). `grep -rn "text" folder` searches files.
+- Inside a package, import from the module where a function lives (`from stackup.core import ...`).
+- `argparse`: positional arguments, `--options` with `type`, `default`, `choices`, `required`, `help`; `--help` and error messages come free. `main(argv=None)` lets tests pass arguments.
+- `[project.scripts] stackup = "stackup.cli:main"` creates `.venv/bin/stackup`, found through PATH when the environment is active.
+- Each layer validates its own inputs: argparse protects the command; `ValueError` protects every other caller.
+- Adjacent strings inside parentheses join, so a long f-string can continue on the next line.
+- README: what it is, the headline image and result, methods and assumptions, install, usage, input format, tests, layout. Images it shows are committed in `docs/images/`.
+- Before publishing: every commit's author and committer email is public. GitHub's no-reply address plus `git filter-branch` rewrote all commits (dates kept) before the first push. Check both `%ae` and `%ce`.
+- `git remote add origin URL`, `git push -u origin main`; a personal access token stands in for the password and the Keychain stores it. Never put a token in a file, commit or message.
+- GitHub Actions (`.github/workflows/tests.yml`, YAML) runs the tests on every push on a clean machine; the badge shows the result.
+- In a shell, `<` means "read from a file", so never leave placeholder brackets in commands.
+- `git tag -a v1.0.0` marks a release; tags are pushed separately with `git push origin v1.0.0`. Versions are MAJOR.MINOR.PATCH.
+
 ## Next step
 
-**Step 8: make it a real project.** Turn the code into an installable package (`pyproject.toml`, `pip install -e .`), add a command-line interface, write a README with the plots, and tidy the git history.
+**The roadmap is complete.** Ideas for going further, from the original plan:
+- **Mean shift and Cpk inputs:** let each dimension carry a process mean and Cpk instead of assuming centered, ±3σ parts.
+- **Sensitivity coefficients:** support nonlinear stacks (angles, radii) where each dimension's effect isn't simply ±1.
+- **A simple web interface** for running a stack without the command line.
+- **More tests:** a test for the command-line interface (using `main(argv=[...])`) and for the plot functions.

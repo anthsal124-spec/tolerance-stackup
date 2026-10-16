@@ -45,7 +45,7 @@ The housing drives the variation under both methods, and more so under RSS (41.8
 Requires Python 3.11 or newer.
 
 ```bash
-git clone <https://github.com/anthsal124-spec/tolerance-stackup.git>
+git clone https://github.com/anthsal124-spec/tolerance-stackup.git
 cd tolerance-stackup
 python3 -m venv .venv
 source .venv/bin/activate
